@@ -14,10 +14,6 @@ data = data[['player', 'season', 'team', 'g', 'stl_per_game',
              'fg_percent', 'pts_per_game', 'mp_per_game', 'ft_per_game', 'fta_per_game']]
 
 data = data[data['season'] > 1997].fillna(0)
-
-def team_order(team):
-    return (team=='@2TM', team)
-
 data["player_search"] = data["player"].apply(normalize)
 data= data.sort_values(by=['season', 'team'], key=lambda col: col.map(lambda t: 1 if t=='2TM' else 0))
 
