@@ -1,4 +1,7 @@
 Get a player from a specific season or a player in general
-ex. Stephen Curry (ALL TIME)
 
-Stephen Curry (ALL TIME) -> Finds closest K players -> returns those players
+Example 1. Stephen Curry (ALL TIME)
+- Stephen Curry (ALL TIME) -> Finds closest K players -> returns those players
+
+Example 2. Stephen Curry (2016-17 Season)
+- Stephen Cury (2016-17) -> Finds closest K players of every season -> Returns the list player of that season
