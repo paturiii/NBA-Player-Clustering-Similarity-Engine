@@ -1,9 +1,9 @@
 import pandas as pd
 
 """
-For general use basic stats on players
+Not used
 """
-
+KEYS = ['season', 'player', 'player_id', 'team', 'pos']
 def general_information():
 
     ADV_COLS = [ # Columns from Advanced.csv (Advanced Stats)
@@ -32,4 +32,10 @@ def general_information():
 
 
 def data_merge():
-    return
+
+    per_game, advanced, play_by_play = general_information()
+
+    data_combine = pd.merge(per_game, advanced, on=KEYS, how='outer')
+    data = pd.merge(data_combine, play_by_play, on=KEYS, how='outer')
+
+    data.to_csv()

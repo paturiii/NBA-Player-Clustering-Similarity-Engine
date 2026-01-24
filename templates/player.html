@@ -3,29 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{player_name | capitalize }} Stats</title>
+    <title>{{ player_name | title }} Stats</title>
 </head>
 <body>
 
+<h1>{{ player_name | title }}</h1>
 
-    {% if data %}
-        <h1>Stats for {{ player_name | capitalize }}</h1>
-        
-        {% for season, stats in data.items() %}
-            <h2>Season: {{ season }}</h2>
-            <ul>
-                {% for stat_name, stat_value in stats.items() %}
-                    <li> {{ stat_name | replace('_', ' ') | capitalize }}: <b>{{ stat_value}}</b></li>
-                {% endfor %}
-            </ul>
-            <hr>
-        {% endfor %}
-        
-    {% else %}
-        <h1>Player Not Found</h1>
-        <p>Could not find data for **{{ player_name | capitalize }}**.</p>
-    {% endif %}
+<table border="1">
+    <tr>
+        <th>Season</th>
+        <th>Team</th>
+        <th>Games</th>
+        <th>Mins</th>
+        <th>PTS</th>
+        <th>REB</th>
+        <th>AST</th>
+        <th>STL</th>
+        <th>BLK</th>
+        <th>FG%</th>
+        <th>FT</th>
+        <th>FTA</th>
+    </tr>
 
-    
+    {% for season, season_data in data.items() %}
+        {% if season_data is mapping %}
+            <!-- Single row -->
+            <tr>
+                <td>{{ season }}</td>
+                <td>{{ season_data['team'] }}</td>
+                <td>{{ season_data['g'] }}</td>
+                <td>{{ season_data['mp_per_game'] }}</td>
+                <td>{{ season_data['pts_per_game'] }}</td>
+                <td>{{ season_data['trb_per_game'] }}</td>
+                <td>{{ season_data['ast_per_game'] }}</td>
+                <td>{{ season_data['stl_per_game'] }}</td>
+                <td>{{ season_data['blk_per_game'] }}</td>
+                <td>{{ season_data['fg_percent'] }}</td>
+                <td>{{ season_data['ft_per_game'] }}</td>
+                <td>{{ season_data['fta_per_game'] }}</td>
+            </tr>
+        {% else %}
+            <!-- Multiple rows -->
+            {% for row in season_data %}
+                <tr>
+                    <td>{{ season }}</td>
+                    <td>{{ row['team'] }}</td>
+                    <td>{{ row['g'] }}</td>
+                    <td>{{ row['mp_per_game'] }}</td>
+                    <td>{{ row['pts_per_game'] }}</td>
+                    <td>{{ row['trb_per_game'] }}</td>
+                    <td>{{ row['ast_per_game'] }}</td>
+                    <td>{{ row['stl_per_game'] }}</td>
+                    <td>{{ row['blk_per_game'] }}</td>
+                    <td>{{ row['fg_percent'] }}</td>
+                    <td>{{ row['ft_per_game'] }}</td>
+                    <td>{{ row['fta_per_game'] }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+
+</table>
+
 </body>
 </html>

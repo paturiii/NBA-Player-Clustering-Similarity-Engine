@@ -1,0 +1,4 @@
+Get a player from a specific season or a player in general
+ex. Stephen Curry (ALL TIME)
+
+Stephen Curry (ALL TIME) -> Finds closest K players -> returns those players
