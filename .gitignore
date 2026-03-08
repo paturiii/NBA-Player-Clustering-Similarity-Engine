@@ -5,3 +5,5 @@ myenv/
 playground/
 
 .DS_Store
+
+models/

@@ -1,6 +1,6 @@
 # NBA Player Archetype
 
-An Machine Learning-pwoered app that clusters NBA players by their playstyle, allowing people to explore stylistic similarities, discover player archetypes and interactively query player networks
+An Machine Learning-powered app that clusters NBA players by their playstyle, allowing people to explore stylistic similarities, discover player archetypes and interactively query player networks
 
 ---
 

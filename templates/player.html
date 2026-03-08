@@ -1,69 +1,184 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ player_name | title }} Stats</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}{{ data.player }} — NBA Playstyle{% endblock %}
 
-<h1>{{ player_name | title }}</h1>
+{% block content %}
+<div class="player-page">
 
-<table border="1">
-    <tr>
-        <th>Season</th>
-        <th>Team</th>
-        <th>Games</th>
-        <th>Mins</th>
-        <th>PTS</th>
-        <th>REB</th>
-        <th>AST</th>
-        <th>STL</th>
-        <th>BLK</th>
-        <th>FG%</th>
-        <th>FT</th>
-        <th>FTA</th>
-    </tr>
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <div class="player-header">
 
-    {% for season, season_data in data.items() %}
-        {% if season_data is mapping %}
-            <!-- Single row -->
+    <div class="player-header__left">
+      <a class="back-link" href="/">← Back</a>
+      <h1 class="player-header__name">{{ data.player }}</h1>
+      <div class="player-header__meta">
+        <span class="tag tag--lg">{{ data.pos }}</span>
+        <span class="tag tag--lg">{{ data.season_count }} seasons</span>
+        <span class="tag tag--lg">{{ data.total_g }} games</span>
+      </div>
+    </div>
+
+    <!-- Season scope for the similarity panel -->
+    <div class="player-header__right">
+      <label class="field__label" for="season-scope">Compare as</label>
+      <select id="season-scope" class="field__select field__select--sm">
+        <option value="">All-Time</option>
+        {% for s in player_seasons %}
+        <option value="{{ s }}"
+          {% if selected_season and selected_season == s|string %}selected{% endif %}>
+          {{ s }}
+        </option>
+        {% endfor %}
+      </select>
+      <button id="find-similar-btn" class="btn btn--primary btn--sm">Find Similar</button>
+    </div>
+
+  </div>
+
+  <!-- ── Two-column body ────────────────────────────────────── -->
+  <div class="player-layout">
+
+    <!-- Season log -->
+    <section class="season-log">
+      <h2 class="section-title">Season Log</h2>
+      <div class="table-wrap">
+        <table class="stat-table">
+          <thead>
             <tr>
-                <td>{{ season }}</td>
-                <td>{{ season_data['team'] }}</td>
-                <td>{{ season_data['g'] }}</td>
-                <td>{{ season_data['mp_per_game'] }}</td>
-                <td>{{ season_data['pts_per_game'] }}</td>
-                <td>{{ season_data['trb_per_game'] }}</td>
-                <td>{{ season_data['ast_per_game'] }}</td>
-                <td>{{ season_data['stl_per_game'] }}</td>
-                <td>{{ season_data['blk_per_game'] }}</td>
-                <td>{{ season_data['fg_percent'] }}</td>
-                <td>{{ season_data['ft_per_game'] }}</td>
-                <td>{{ season_data['fta_per_game'] }}</td>
+              <th>Season</th>
+              <th>Pos</th>
+              <th>G</th>
+              <th title="True Shooting %">TS%</th>
+              <th title="Effective FG%">eFG%</th>
+              <th title="Usage %">USG%</th>
+              <th title="Assist %">AST%</th>
+              <th title="Turnover %">TOV%</th>
+              <th title="Offensive Rebound %">ORB%</th>
+              <th title="Defensive Rebound %">DRB%</th>
+              <th title="Steal %">STL%</th>
+              <th title="Block %">BLK%</th>
+              <th title="3-Point Attempt Rate">3PAr</th>
+              <th title="Free Throw Rate">FTr</th>
+              <th title="Offensive Box +/-">OBPM</th>
             </tr>
-        {% else %}
-            <!-- Multiple rows -->
-            {% for row in season_data %}
-                <tr>
-                    <td>{{ season }}</td>
-                    <td>{{ row['team'] }}</td>
-                    <td>{{ row['g'] }}</td>
-                    <td>{{ row['mp_per_game'] }}</td>
-                    <td>{{ row['pts_per_game'] }}</td>
-                    <td>{{ row['trb_per_game'] }}</td>
-                    <td>{{ row['ast_per_game'] }}</td>
-                    <td>{{ row['stl_per_game'] }}</td>
-                    <td>{{ row['blk_per_game'] }}</td>
-                    <td>{{ row['fg_percent'] }}</td>
-                    <td>{{ row['ft_per_game'] }}</td>
-                    <td>{{ row['fta_per_game'] }}</td>
-                </tr>
+          </thead>
+          <tbody>
+            {% for s in data.seasons %}
+            <tr>
+              <td class="stat-table__season">{{ s.season }}</td>
+              <td>{{ s.pos }}</td>
+              <td>{{ s.g }}</td>
+              <td>{{ "%.3f" | format(s.ts_percent) }}</td>
+              <td>{{ "%.3f" | format(s.e_fg_percent) }}</td>
+              <td>{{ "%.1f" | format(s.usg_percent) }}</td>
+              <td>{{ "%.1f" | format(s.ast_percent) }}</td>
+              <td>{{ "%.1f" | format(s.tov_percent) }}</td>
+              <td>{{ "%.1f" | format(s.orb_percent) }}</td>
+              <td>{{ "%.1f" | format(s.drb_percent) }}</td>
+              <td>{{ "%.1f" | format(s.stl_percent) }}</td>
+              <td>{{ "%.1f" | format(s.blk_percent) }}</td>
+              <td>{{ "%.3f" | format(s.x3p_ar) }}</td>
+              <td>{{ "%.3f" | format(s.f_tr) }}</td>
+              <td>{{ "%.1f" | format(s.obpm) }}</td>
+            </tr>
             {% endfor %}
-        {% endif %}
-    {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="stat-table__career">
+              <td>Career avg</td>
+              <td>—</td>
+              <td>{{ data.total_g }}</td>
+              <td>{{ "%.3f" | format(data.career_avg.ts_percent) }}</td>
+              <td>{{ "%.3f" | format(data.career_avg.e_fg_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.usg_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.ast_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.tov_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.orb_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.drb_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.stl_percent) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.blk_percent) }}</td>
+              <td>{{ "%.3f" | format(data.career_avg.x3p_ar) }}</td>
+              <td>{{ "%.3f" | format(data.career_avg.f_tr) }}</td>
+              <td>{{ "%.1f" | format(data.career_avg.obpm) }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
 
-</table>
+    <!-- data-player passes name to JS without Jinja inside <script> -->
+    <section class="similar-panel" id="similar-panel" data-player="{{ data.player }}">
+      <h2 class="section-title">
+        Similar Players
+        <span class="similar-panel__scope" id="similar-scope"></span>
+      </h2>
+      <div id="similar-list" class="similar-list">
+        <p class="similar-list__state">Loading…</p>
+      </div>
+    </section>
 
-</body>
-</html>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Read player name from data attribute — keeps Jinja out of <script> (no linter errors)
+const NBA_PLAYER_NAME = document.getElementById('similar-panel').dataset.player;
+
+const seasonScope   = document.getElementById('season-scope');
+const findBtn       = document.getElementById('find-similar-btn');
+const similarList   = document.getElementById('similar-list');
+const similarScope  = document.getElementById('similar-scope');
+
+// Auto-load on page open using whatever season is pre-selected (or all-time)
+loadSimilar(seasonScope.value);
+
+findBtn.addEventListener('click', () => loadSimilar(seasonScope.value));
+
+async function loadSimilar(season) {
+  similarList.innerHTML = '<p class="similar-list__state">Loading…</p>';
+  similarScope.textContent = season ? `— ${season}` : '— All-Time';
+
+  let url = `/api/similar?player=${encodeURIComponent(NBA_PLAYER_NAME)}&k=15`;
+  if (season) url += `&season=${season}`;
+
+  try {
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if (data.error) {
+      similarList.innerHTML = `<p class="similar-list__state similar-list__state--error">${data.error}</p>`;
+      return;
+    }
+
+    similarList.innerHTML = '';
+    data.results.forEach((r, i) => {
+      const pct  = Math.round(r.similarity * 100);
+      const meta = data.query.mode === 'season'
+        ? `${r.pos} · ${r.season} · ${r.g}G`
+        : `${r.pos || ''} · ${r.season_count} seasons · ${r.total_g}G`;
+
+      const row     = document.createElement('div');
+      row.className = 'similar-row';
+      row.innerHTML = `
+        <span class="similar-row__rank">${i + 1}</span>
+        <div class="similar-row__info">
+          <a class="similar-row__name"
+             href="/player/${encodeURIComponent(r.player)}">${r.player}</a>
+          <span class="similar-row__meta">${meta}</span>
+        </div>
+        <div class="similar-row__right">
+          <div class="sim-bar sim-bar--sm">
+            <div class="sim-bar__fill" style="width:${pct}%"></div>
+          </div>
+          <span class="similar-row__pct">${pct}%</span>
+        </div>`;
+      similarList.appendChild(row);
+    });
+
+  } catch {
+    similarList.innerHTML = '<p class="similar-list__state similar-list__state--error">Failed to load.</p>';
+  }
+}
+</script>
+{% endblock %}
