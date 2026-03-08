@@ -7,3 +7,5 @@ playground/
 .DS_Store
 
 models/
+
+.vscode/
