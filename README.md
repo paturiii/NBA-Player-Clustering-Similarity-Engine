@@ -25,8 +25,9 @@ An Machine Learning-powered app that clusters NBA players by their playstyle, al
     pip install -r requirements.txt
 ```
 
-3. Run the app
+3. Train the model and Run the app
 ``` bash
+    python3 train.py --csv data/Comparison_Stats.csv
     python3 app.py
 ```
 open your browser and navigate to 

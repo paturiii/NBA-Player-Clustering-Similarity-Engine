@@ -42,6 +42,7 @@ class NBAQueryEngine:
         print(f"[QueryEngine] {len(self._career_idx)} players | "
               f"{len(self._season_idx)} player-seasons ready")
 
+
     # ── Mode 1: All-Time ──────────────────────────────────────────
     def query_alltime(self, player: str, k: int = 10) -> list[dict]:
         """
@@ -89,7 +90,7 @@ class NBAQueryEngine:
 
         idx       = self._season_idx[key]
         query_vec = self.season_vecs[idx].reshape(1, -1)
-        scores    = cosine_similarity(query_vec, self.season_vecs)[0]
+        scores = cosine_similarity(query_vec, self.season_vecs)[0]
 
         results = []
         for i in np.argsort(scores)[::-1]:
@@ -109,6 +110,7 @@ class NBAQueryEngine:
             if len(results) >= k:
                 break
         return results
+
 
     # ── Player page ───────────────────────────────────────────────
     def player_page(self, player: str) -> dict:
@@ -143,12 +145,14 @@ class NBAQueryEngine:
             raise ValueError(f"Player '{player}' not found.")
         return sorted(rows.astype(int).tolist())
 
+
     def search_players(self, query: str, limit: int = 15) -> list[str]:
         """Case-insensitive substring search — used for autocomplete."""
         q = query.lower().strip()
         if not q:
             return []
         return sorted(p for p in self._career_idx if q in p.lower())[:limit]
+
 
     def all_seasons(self) -> list[int]:
         """Sorted list of every season in the dataset."""
