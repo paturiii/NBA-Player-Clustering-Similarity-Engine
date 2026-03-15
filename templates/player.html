@@ -125,10 +125,10 @@
 // Read player name from data attribute — keeps Jinja out of <script> (no linter errors)
 const NBA_PLAYER_NAME = document.getElementById('similar-panel').dataset.player;
 
-const seasonScope   = document.getElementById('season-scope');
-const findBtn       = document.getElementById('find-similar-btn');
-const similarList   = document.getElementById('similar-list');
-const similarScope  = document.getElementById('similar-scope');
+const seasonScope = document.getElementById('season-scope');
+const findBtn = document.getElementById('find-similar-btn');
+const similarList = document.getElementById('similar-list');
+const similarScope = document.getElementById('similar-scope');
 
 // Auto-load on page open using whatever season is pre-selected (or all-time)
 loadSimilar(seasonScope.value);
@@ -143,7 +143,7 @@ async function loadSimilar(season) {
   if (season) url += `&season=${season}`;
 
   try {
-    const res  = await fetch(url);
+    const res = await fetch(url);
     const data = await res.json();
 
     if (data.error) {
@@ -153,12 +153,12 @@ async function loadSimilar(season) {
 
     similarList.innerHTML = '';
     data.results.forEach((r, i) => {
-      const pct  = Math.round(r.similarity * 100);
+      const pct = Math.round(r.similarity * 100);
       const meta = data.query.mode === 'season'
         ? `${r.pos} · ${r.season} · ${r.g}G`
         : `${r.pos || ''} · ${r.season_count} seasons · ${r.total_g}G`;
 
-      const row     = document.createElement('div');
+      const row = document.createElement('div');
       row.className = 'similar-row';
       row.innerHTML = `
         <span class="similar-row__rank">${i + 1}</span>

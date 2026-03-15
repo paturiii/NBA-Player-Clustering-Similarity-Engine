@@ -24,8 +24,8 @@ from pipeline.similarity import (
 
 
 def elbow_plot(X_pca):
-    inertias  = []
-    K_range   = range(4, 20)
+    inertias = []
+    K_range = range(4, 20)
     for k in K_range:
         km = KMeans(n_clusters=k, random_state=42, n_init=10)
         km.fit(X_pca)
@@ -43,9 +43,9 @@ def elbow_plot(X_pca):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--csv',      default='data/Comparison_Stats.csv')
+    parser.add_argument('--csv', default='data/Comparison_Stats.csv')
     parser.add_argument('--clusters', type=int, default=10)
-    parser.add_argument('--elbow',    action='store_true')
+    parser.add_argument('--elbow', action='store_true')
     args = parser.parse_args()
 
     print("\n── Step 1: Load & clean ────────────────────────────────")
@@ -62,7 +62,7 @@ def main():
     if args.elbow:
         print("\n── Elbow plot ──────────────────────────────────────────")
         X_scaled = scaler.transform(career_df[STAT_FEATURES].values)
-        X_pca    = pca.transform(X_scaled)
+        X_pca = pca.transform(X_scaled)
         elbow_plot(X_pca)
 
     print("\n── Step 4: Season index ────────────────────────────────")

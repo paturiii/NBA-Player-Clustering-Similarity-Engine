@@ -71,17 +71,17 @@
 let selectedPlayer = '';
 let debounceTimer  = null;
 
-const playerInput  = document.getElementById('player-input');
-const acList       = document.getElementById('autocomplete-list');
+const playerInput = document.getElementById('player-input');
+const acList = document.getElementById('autocomplete-list');
 const seasonSelect = document.getElementById('season-select');
-const kSlider      = document.getElementById('k-slider');
-const kDisplay     = document.getElementById('k-display');
-const searchBtn    = document.getElementById('search-btn');
-const spinner      = document.getElementById('spinner');
-const errorMsg     = document.getElementById('error-msg');
-const results      = document.getElementById('results');
+const kSlider = document.getElementById('k-slider');
+const kDisplay = document.getElementById('k-display');
+const searchBtn = document.getElementById('search-btn');
+const spinner = document.getElementById('spinner');
+const errorMsg = document.getElementById('error-msg');
+const results = document.getElementById('results');
 const resultsTitle = document.getElementById('results-title');
-const resultsGrid  = document.getElementById('results-grid');
+const resultsGrid = document.getElementById('results-grid');
 
 // ── k slider ─────────────────────────────────────────────────────
 kSlider.addEventListener('input', () => kDisplay.textContent = kSlider.value);
@@ -89,7 +89,7 @@ kSlider.addEventListener('input', () => kDisplay.textContent = kSlider.value);
 // ── Autocomplete ──────────────────────────────────────────────────
 playerInput.addEventListener('input', () => {
   const q = playerInput.value.trim();
-  selectedPlayer     = '';
+  selectedPlayer = '';
   searchBtn.disabled = true;
   resetSeasonSelect();
   clearTimeout(debounceTimer);
@@ -106,7 +106,7 @@ async function fetchSuggestions(q) {
   if (!list.length) { closeAC(); return; }
 
   list.forEach(name => {
-    const li       = document.createElement('li');
+    const li = document.createElement('li');
     li.className   = 'autocomplete__item';
     li.textContent = name;
     li.addEventListener('mousedown', () => selectPlayer(name));
@@ -116,7 +116,7 @@ async function fetchSuggestions(q) {
 }
 
 function selectPlayer(name) {
-  selectedPlayer    = name;
+  selectedPlayer = name;
   playerInput.value = name;
   closeAC();
   loadSeasons(name);
@@ -133,13 +133,13 @@ async function loadSeasons(playerName) {
 
   seasonSelect.innerHTML = '<option value="">All-Time</option>';
   data.seasons.forEach(s => {
-    const opt       = document.createElement('option');
-    opt.value       = s;
+    const opt = document.createElement('option');
+    opt.value = s;
     opt.textContent = s;
     seasonSelect.appendChild(opt);
   });
   seasonSelect.disabled  = false;
-  searchBtn.disabled     = false;
+  searchBtn.disabled = false;
 }
 
 function resetSeasonSelect() {
@@ -154,7 +154,7 @@ async function runSearch() {
   if (!selectedPlayer) return;
 
   const season = seasonSelect.value;
-  const k      = kSlider.value;
+  const k = kSlider.value;
 
   let url = `/api/similar?player=${encodeURIComponent(selectedPlayer)}&k=${k}`;
   if (season) url += `&season=${season}`;
@@ -164,7 +164,7 @@ async function runSearch() {
   results.hidden = true;
 
   try {
-    const res  = await fetch(url);
+    const res = await fetch(url);
     const data = await res.json();
     if (data.error) { showError(data.error); return; }
     renderResults(data);
@@ -191,7 +191,7 @@ function renderResults(data) {
       ? `<span class="tag">${r.pos}</span><span class="tag">${r.season}</span><span class="tag">${r.g}G</span>`
       : `<span class="tag">${r.pos || ''}</span><span class="tag">${r.season_count} seasons</span><span class="tag">${r.total_g}G</span>`;
 
-    const card     = document.createElement('div');
+    const card  = document.createElement('div');
     card.className = 'player-card';
     card.innerHTML = `
       <div class="player-card__rank">${i + 1}</div>
