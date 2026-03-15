@@ -28,12 +28,12 @@ class NBAQueryEngine:
     """
 
     def __init__(self):
-        self.scaler      = joblib.load(os.path.join(MODEL_DIR, 'scaler.pkl'))
-        self.career_df   = pd.read_csv(os.path.join(MODEL_DIR, 'career_df.csv'))
-        self.season_df   = pd.read_csv(os.path.join(MODEL_DIR, 'season_df.csv'))
+        self.scaler = joblib.load(os.path.join(MODEL_DIR, 'scaler.pkl'))
+        self.career_df = pd.read_csv(os.path.join(MODEL_DIR, 'career_df.csv'))
+        self.season_df = pd.read_csv(os.path.join(MODEL_DIR, 'season_df.csv'))
         self.career_vecs = np.load(os.path.join(MODEL_DIR, 'career_vectors_scaled.npy'))
         self.season_vecs = np.load(os.path.join(MODEL_DIR, 'season_vectors_scaled.npy'))
-        self.career_sim  = np.load(os.path.join(MODEL_DIR, 'career_sim_matrix.npy'))
+        self.career_sim = np.load(os.path.join(MODEL_DIR, 'career_sim_matrix.npy'))
 
         # O(1) name -> row-index maps
         self._career_idx = {p: i for i, p in enumerate(self.career_df['player'])}
@@ -53,7 +53,7 @@ class NBAQueryEngine:
         if player not in self._career_idx:
             raise ValueError(f"Player '{player}' not found.")
 
-        idx    = self._career_idx[player]
+        idx = self._career_idx[player]
         scores = self.career_sim[idx]
 
         results = []
@@ -88,7 +88,7 @@ class NBAQueryEngine:
         if key not in self._season_idx:
             raise ValueError(f"'{key}' not found. Check player name and season.")
 
-        idx       = self._season_idx[key]
+        idx = self._season_idx[key]
         query_vec = self.season_vecs[idx].reshape(1, -1)
         scores = cosine_similarity(query_vec, self.season_vecs)[0]
 
@@ -100,12 +100,12 @@ class NBAQueryEngine:
             if row['player'] == player:    # skip all seasons of the same player
                 continue
             results.append({
-                'player':     row['player'],
-                'season':     int(row['season']),
-                'key':        row['player_season_key'],
-                'pos':        row['pos'],
+                'player': row['player'],
+                'season': int(row['season']),
+                'key': row['player_season_key'],
+                'pos': row['pos'],
                 'similarity': round(float(scores[i]), 4),
-                'g':          int(row['g']),
+                'g': int(row['g']),
             })
             if len(results) >= k:
                 break
@@ -125,9 +125,9 @@ class NBAQueryEngine:
         career = self.career_df[self.career_df['player'] == player].iloc[0]
 
         return {
-            'player':       player,
-            'pos':          seasons['pos'].mode()[0],
-            'total_g':      int(career['total_g']),
+            'player': player,
+            'pos': seasons['pos'].mode()[0],
+            'total_g': int(career['total_g']),
             'season_count': int(career['season_count']),
             'seasons':      (
                 seasons[['season', 'pos', 'g'] + STAT_FEATURES]

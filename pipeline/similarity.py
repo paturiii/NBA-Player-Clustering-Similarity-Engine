@@ -18,9 +18,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 import joblib
 import os
 
-MODEL_DIR     = os.path.join(os.path.dirname(__file__), '..', 'models')
+MODEL_DIR = os.path.join(os.path.dirname(__file__), '..', 'models')
 COMBINED_TAGS = {'TOT', '2TM', '3TM', '4TM'}
-MIN_GAMES     = 20
+MIN_GAMES = 20
 
 # ── Rate stats: percentages / per-possession — use as-is ──────────
 RATE_FEATURES = [
@@ -47,7 +47,7 @@ COUNT_FEATURES = [
 # offensive_foul_drawn excluded — 27.5 % nulls, too sparse
 
 COUNT_FEATURES_PG = [f + '_pg' for f in COUNT_FEATURES]
-STAT_FEATURES     = RATE_FEATURES + COUNT_FEATURES_PG   # 24 features total
+STAT_FEATURES = RATE_FEATURES + COUNT_FEATURES_PG   # 24 features total
 
 
 # ══════════════════════════════════════════════════════════════════
@@ -61,8 +61,8 @@ def deduplicate_traded_players(df: pd.DataFrame) -> pd.DataFrame:
     Keep only the combined row for traded players; keep the single
     row as-is for players who stayed on one team all year.
     """
-    counts  = df.groupby(['player', 'season'])['team'].transform('count')
-    mask    = (counts == 1) | (df['team'].isin(COMBINED_TAGS))
+    counts = df.groupby(['player', 'season'])['team'].transform('count')
+    mask = (counts == 1) | (df['team'].isin(COMBINED_TAGS))
     deduped = df[mask].copy()
     assert deduped.groupby(['player', 'season']).size().max() == 1, \
         "Duplicate player-seasons remain after dedup!"
@@ -94,7 +94,7 @@ def load_data(csv_path: str) -> pd.DataFrame:
     df = deduplicate_traded_players(df)
 
     before = len(df)
-    df     = df[df['g'] >= MIN_GAMES].copy()
+    df = df[df['g'] >= MIN_GAMES].copy()
     print(f"  Games filter (>= {MIN_GAMES}): removed {before - len(df)} rows "
           f"-> {len(df)} remaining")
 
@@ -117,14 +117,14 @@ def load_data(csv_path: str) -> pd.DataFrame:
 def build_career_vectors(df: pd.DataFrame) -> pd.DataFrame:
     records = []
     for p, grp in df.groupby('player'):
-        weights        = grp['g'].values.astype(float)
-        weights       /= weights.sum()
+        weights = grp['g'].values.astype(float)
+        weights /= weights.sum()
         weighted_stats = (grp[STAT_FEATURES].values * weights[:, None]).sum(axis=0)
         records.append({
-            'player':       p,
-            'pos':          grp['pos'].mode()[0],
-            'total_g':      int(grp['g'].sum()),
-            'seasons':      sorted(grp['season'].astype(str).tolist()),
+            'player': p,
+            'pos': grp['pos'].mode()[0],
+            'total_g': int(grp['g'].sum()),
+            'seasons': sorted(grp['season'].astype(str).tolist()),
             'season_count': len(grp),
             **dict(zip(STAT_FEATURES, weighted_stats))
         })
@@ -149,17 +149,17 @@ def train_pipeline(career_df: pd.DataFrame, n_clusters: int = 10):
 
     X = career_df[STAT_FEATURES].values
 
-    scaler   = StandardScaler()
+    scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
-    pca   = PCA(n_components=0.90, random_state=42)
+    pca = PCA(n_components=0.90, random_state=42)
     X_pca = pca.fit_transform(X_scaled)
     print(f"  PCA: {X.shape[1]} features -> {X_pca.shape[1]} components "
           f"({pca.explained_variance_ratio_.sum():.1%} variance)")
 
     # KMeans used internally only — cluster IDs never shown in the UI
-    kmeans               = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-    career_df            = career_df.copy()
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+    career_df = career_df.copy()
     career_df['cluster'] = kmeans.fit_predict(X_pca)
 
     # Precompute career similarity on full-resolution scaled vectors (not PCA)
@@ -167,7 +167,7 @@ def train_pipeline(career_df: pd.DataFrame, n_clusters: int = 10):
     career_sim = cosine_similarity(X_scaled)
 
     joblib.dump(scaler, os.path.join(MODEL_DIR, 'scaler.pkl'))
-    joblib.dump(pca,    os.path.join(MODEL_DIR, 'pca.pkl'))
+    joblib.dump(pca, os.path.join(MODEL_DIR, 'pca.pkl'))
     joblib.dump(kmeans, os.path.join(MODEL_DIR, 'kmeans.pkl'))
     np.save(os.path.join(MODEL_DIR, 'career_vectors_scaled.npy'), X_scaled)
     np.save(os.path.join(MODEL_DIR, 'career_sim_matrix.npy'),     career_sim)

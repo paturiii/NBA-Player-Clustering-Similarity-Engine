@@ -8,7 +8,7 @@ All ML logic lives in pipeline/similarity.py and pipeline/query.py.
 from flask import Flask, jsonify, render_template, request
 from pipeline.query import NBAQueryEngine
 
-app    = Flask(__name__)
+app = Flask(__name__)
 engine = NBAQueryEngine()          # loaded once at startup
 
 
@@ -27,7 +27,7 @@ def api_similar():
     """
     player = request.args.get('player', '').strip()
     season = request.args.get('season', '').strip()
-    k      = min(int(request.args.get('k', 10)), 50)   # hard cap at 50
+    k = min(int(request.args.get('k', 10)), 50)   # hard cap at 50
 
     if not player:
         return jsonify({'error': 'player param required'}), 400
@@ -35,10 +35,10 @@ def api_similar():
     try:
         if season:
             results = engine.query_season(player, season, k=k)
-            mode    = 'season'
+            mode = 'season'
         else:
             results = engine.query_alltime(player, k=k)
-            mode    = 'alltime'
+            mode = 'alltime'
 
         return jsonify({
             'query':   {'player': player, 'season': season or None, 'mode': mode},
@@ -69,7 +69,7 @@ def api_seasons(player_name):
     """
     try:
         return jsonify({
-            'player':  player_name,
+            'player': player_name,
             'seasons': engine.get_player_seasons(player_name),
         })
     except ValueError as e:
@@ -82,7 +82,7 @@ def api_search():
     GET /api/search?q=curry&limit=10
     Autocomplete — returns matching player names.
     """
-    q     = request.args.get('q', '').strip()
+    q = request.args.get('q', '').strip()
     limit = int(request.args.get('limit', 10))
     return jsonify(engine.search_players(q, limit=limit))
 
@@ -100,7 +100,7 @@ def index():
 def player_page(player_name):
     season = request.args.get('season', '').strip() or None
     try:
-        data           = engine.player_page(player_name)
+        data = engine.player_page(player_name)
         player_seasons = engine.get_player_seasons(player_name)
     except ValueError:
         return render_template('404.html'), 404
