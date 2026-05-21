@@ -58,14 +58,15 @@ a:hover { text-decoration: underline; }
 
 /* ── Search card ─────────────────────────────────────────────── */
 .search-card {
-  background:    var(--surface);
-  border:        1px solid var(--border);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding:       1.75rem;
-  display:       flex;
+  padding: 1.75rem;
+  display: flex;
   flex-direction: column;
-  gap:           1.25rem;
-  max-width:     540px;
+  gap: 1.25rem;
+  max-width: 540px;
+  margin: 0 auto;
 }
 
 /* ── Field ───────────────────────────────────────────────────── */
@@ -156,6 +157,7 @@ a:hover { text-decoration: underline; }
 
 /* ── Spinner ─────────────────────────────────────────────────── */
 .spinner { display: flex; justify-content: center; padding: 2.5rem; }
+.spinner[hidden] { display: none; }
 .spinner__ring {
   width: 36px; height: 36px;
   border: 3px solid var(--border);

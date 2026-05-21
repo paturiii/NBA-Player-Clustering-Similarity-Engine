@@ -64,12 +64,12 @@ class NBAQueryEngine:
             if row['player'] == player:    # skip any entry for the same player
                 continue
             results.append({
-                'player':       row['player'],
-                'pos':          row.get('pos', ''),
-                'similarity':   round(float(scores[i]), 4),
-                'seasons':      _parse_seasons(row['seasons']),
+                'player': row['player'],
+                'pos': row.get('pos', ''),
+                'similarity': round(float(scores[i]), 4),
+                'seasons': _parse_seasons(row['seasons']),
                 'season_count': int(row['season_count']),
-                'total_g':      int(row['total_g']),
+                'total_g': int(row['total_g']),
             })
             if len(results) >= k:
                 break
